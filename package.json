@@ -1,0 +1,15 @@
+{
+  "name": "sparrow-backend",
+  "version": "1.0.0",
+  "description": " Sparrow backend which is - A small but agile bird, symbolizing quick and efficient financial transactions.",
+  "main": "index.js",
+  "repository": "https://github.com/tushar-454/sparrow-backend",
+  "author": "Tushar",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "scripts": {
+    "start": "nodemon index.js"
+  }
+}
