@@ -4,9 +4,9 @@ const jwt = require('jsonwebtoken');
  * create a token for the user
  */
 const createToken = async (req, res, next) => {
-  const { phone } = req.body;
+  const { emailOrPhone } = req.body;
   try {
-    const payload = { phone };
+    const payload = { emailOrPhone };
     const token = await jwt.sign(payload, process.env.TOKEN_SECRET, {
       expiresIn: '1h',
     });
