@@ -17,14 +17,6 @@ const transactionSchema = new Schema({
     type: String,
     required: true,
   },
-  agentName: {
-    type: String,
-    required: true,
-  },
-  agentNumber: {
-    type: String,
-    required: true,
-  },
   receiverName: {
     type: String,
     required: true,
