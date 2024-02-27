@@ -8,12 +8,10 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
   },
   phone: {
     type: String,
     required: true,
-    unique: true,
   },
   image: {
     type: String,
@@ -22,14 +20,13 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  accountType: {
+  role: {
     type: String,
     required: true,
   },
   nidNo: {
     type: String,
     required: true,
-    unique: true,
   },
   isActiveAccount: {
     type: Boolean,
