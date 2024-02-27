@@ -39,4 +39,46 @@ const createTransaction = async (req, res, next) => {
   }
 };
 
-module.exports = { createTransaction };
+/**
+ * get transactions by phone controller
+ */
+
+const getTransactionsByPhone = async (req, res, next) => {
+  try {
+    const { phone } = req.params;
+    const transactions = await Transactions.find({
+      $or: [{ senderNumber: phone }, { receiverNumber: phone }],
+    });
+    res.status(200).json({
+      success: true,
+      message: 'User Transactions successfully',
+      data: transactions,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * get all transactions for admin
+ */
+
+const getAllTransactions = async (req, res, next) => {
+  try {
+    // get all transactions
+    const transactions = await Transactions.find();
+    res.status(200).json({
+      success: true,
+      message: 'All transactions found',
+      data: transactions,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createTransaction,
+  getTransactionsByPhone,
+  getAllTransactions,
+};
