@@ -8,12 +8,14 @@ const accountSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
   },
-  number: {
+  phone: {
     type: String,
     required: true,
-    unique: true,
+  },
+  role: {
+    type: String,
+    required: true,
   },
   balance: {
     type: Number,
