@@ -9,7 +9,9 @@ const createUser = async (req, res, next) => {
   try {
     const { name, email, phone, pin, role, nidNo } = req.body;
     // check if the user already exists
-    const isExist = await User.findOne({ $or: [{ email }, { phone }] });
+    const isExist = await User.findOne({
+      $or: [{ email }, { phone }, { nidNo }],
+    });
     if (isExist) {
       return res.status(409).json({ success: false, message: 'User exists' });
     }
@@ -86,4 +88,49 @@ const getAccount = async (req, res, next) => {
   }
 };
 
-module.exports = { createUser, loginUser, getAccount };
+/**
+ * cash out controller
+ */
+
+const cashOut = async (req, res, next) => {
+  try {
+    const { agentPhone, phone, amount } = req.body;
+    const agent = await Account.findOne({ phone: agentPhone });
+    const customer = await Account.findOne({ phone });
+    const admin = await Account.findOne({ role: 'Admin' });
+    const amountToNumber = Number(amount);
+    if (customer.balance < amountToNumber + amountToNumber * 0.015) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Insufficient balance' });
+    }
+    if (amountToNumber < 50) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Minimum cash out amount is 50' });
+    }
+    if (!agent) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Agent not found' });
+    }
+    customer.balance =
+      customer.balance - (amountToNumber + amountToNumber * 0.015);
+    agent.balance = agent.balance + amountToNumber * 0.01;
+    admin.balance = admin.balance + amountToNumber * 0.005;
+    await customer.save();
+    await agent.save();
+    await admin.save();
+    res.status(200).json({
+      success: true,
+      message: 'Cash out successfully',
+      data: customer,
+      data1: admin,
+      data2: agent,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createUser, loginUser, getAccount, cashOut };

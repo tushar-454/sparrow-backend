@@ -19,7 +19,7 @@ const createAccount = async (req, res, next) => {
       email,
       phone,
       role,
-      balance: 50,
+      balance: 40,
     });
     await newAccount.save();
     res.status(201).json({
