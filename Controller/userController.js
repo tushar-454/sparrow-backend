@@ -178,4 +178,37 @@ const sendMoney = async (req, res, next) => {
   }
 };
 
-module.exports = { createUser, loginUser, getAccount, cashOut, sendMoney };
+/**
+ * get user info controller
+ */
+
+const getUserInfo = async (req, res, next) => {
+  try {
+    const { phone } = req.params;
+    const user = await User.findOne({
+      phone: phone,
+    });
+    if (!user) {
+      return res.status(404).json({
+        status: 404,
+        message: 'User not found',
+      });
+    }
+    res.status(200).json({
+      status: 200,
+      message: 'User found',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createUser,
+  loginUser,
+  getAccount,
+  cashOut,
+  sendMoney,
+  getUserInfo,
+};
