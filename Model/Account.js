@@ -21,6 +21,12 @@ const accountSchema = new Schema({
     type: Number,
     required: true,
   },
+  income: {
+    type: Number,
+  },
+  userBalance: {
+    type: Number,
+  },
 });
 const Account = model('Account', accountSchema, 'accounts');
 module.exports = Account;

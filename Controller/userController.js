@@ -124,13 +124,58 @@ const cashOut = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Cash out successfully',
-      data: customer,
-      data1: admin,
-      data2: agent,
     });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = { createUser, loginUser, getAccount, cashOut };
+/**
+ * send money controller
+ */
+
+const sendMoney = async (req, res, next) => {
+  try {
+    const { receiverPhone, phone, amount } = req.body;
+    const receiver = await Account.findOne({ phone: receiverPhone });
+    const customer = await Account.findOne({ phone });
+    const admin = await Account.findOne({ role: 'Admin' });
+    const amountToNumber = Number(amount);
+    if (
+      (amountToNumber > 100 && customer.balance < amountToNumber + 5) ||
+      (amountToNumber < 100 && customer.balance < amountToNumber)
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Insufficient balance' });
+    }
+    if (!receiver) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Account not found' });
+    }
+    if (amountToNumber < 50) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Minimum send money amount is 50' });
+    }
+
+    customer.balance =
+      customer.balance -
+      (amountToNumber > 100 ? amountToNumber + 5 : amountToNumber);
+    receiver.balance = receiver.balance + amountToNumber;
+    admin.balance = admin.balance + (amountToNumber > 100 ? 5 : 0);
+    admin.income = admin.income + (amountToNumber > 100 ? 5 : 0);
+    await customer.save();
+    await receiver.save();
+    await admin.save();
+    res.status(200).json({
+      success: true,
+      message: 'Send money successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createUser, loginUser, getAccount, cashOut, sendMoney };
