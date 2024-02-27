@@ -7,6 +7,11 @@ const User = require('../Model/User');
 const createUser = async (req, res, next) => {
   try {
     const { name, email, phone, pin, role, nidNo } = req.body;
+    // check if the user already exists
+    const isExist = await User.findOne({ $or: [{ email }, { phone }] });
+    if (isExist) {
+      return res.status(409).json({ success: false, message: 'User exists' });
+    }
     const saltRounds = 10;
     bcrypt.hash(pin, saltRounds).then(async function (hash) {
       const newCustomer = new User({
@@ -18,7 +23,11 @@ const createUser = async (req, res, next) => {
         nidNo,
       });
       await newCustomer.save();
-      res.status(201).json({ message: 'success', data: newCustomer });
+      res.status(201).json({
+        success: true,
+        message: 'User create successfully',
+        data: newCustomer,
+      });
     });
   } catch (error) {
     next(error);
@@ -40,14 +49,18 @@ const loginUser = async (req, res, next) => {
         userByPhone?.pin || userByEmail?.pin
       );
       if (match) {
-        res
-          .status(200)
-          .json({ message: 'success', data: userByPhone || userByEmail });
+        res.status(200).json({
+          success: true,
+          message: 'User login successfully',
+          data: userByPhone || userByEmail,
+        });
       } else {
-        res.status(209).json({ message: 'Invalid Credentials' });
+        res
+          .status(209)
+          .json({ success: false, message: 'Invalid Credentials' });
       }
     }
-    res.status(404).json({ message: 'Not Found' });
+    res.status(404).json({ success: false, message: 'User not found' });
   } catch (error) {
     next(error);
   }
