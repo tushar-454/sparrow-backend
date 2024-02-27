@@ -94,44 +94,20 @@ const userReauestAction = async (req, res, next) => {
     const { requestType } = req.body;
     const user = await User.findOne({ phone });
     user[requestType] = false;
-    await user.save();
     const userAccount = await Account.findOne({ phone });
-    switch (requestType) {
-      case 'balance':
-        userAccount.balance = userAccount.balance + 100000;
-        await userAccount.save();
-        res.status(200).json({
-          status: 200,
-          message: 'User balance updated',
-          data: userAccount,
-        });
-        break;
-      case 'withdraw':
-        if (userAccount.balance < 100000) {
-          userAccount.balance = 0;
-          await userAccount.save();
-          return res.status(200).json({
-            status: 200,
-            message: 'User balance updated',
-            data: userAccount,
-          });
-        }
-        userAccount.balance = userAccount.balance - 100000;
-        await userAccount.save();
-        res.status(200).json({
-          status: 200,
-          message: 'User balance updated',
-          data: userAccount,
-        });
-        break;
-      default:
-        res.status(200).json({
-          status: 200,
-          message: 'User balance updated',
-          data: userAccount,
-        });
-        break;
+    if (requestType === 'balance') {
+      userAccount.balance = userAccount.balance + 100000;
+    } else if (requestType === 'withdraw') {
+      userAccount.balance =
+        userAccount.balance < 100000 ? 0 : userAccount.balance - 100000;
     }
+    await userAccount.save();
+    await user.save();
+    res.status(200).json({
+      status: 200,
+      message: 'User balance updated',
+      data: userAccount,
+    });
   } catch (error) {
     next(error);
   }
