@@ -12,22 +12,21 @@ const createUser = async (req, res, next) => {
     if (isExist) {
       return res.status(409).json({ success: false, message: 'User exists' });
     }
-    const saltRounds = 10;
-    bcrypt.hash(pin, saltRounds).then(async function (hash) {
-      const newCustomer = new User({
-        name,
-        email,
-        phone,
-        pin: hash,
-        role,
-        nidNo,
-      });
-      await newCustomer.save();
-      res.status(201).json({
-        success: true,
-        message: 'User create successfully',
-        data: newCustomer,
-      });
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(pin, salt);
+    const newCustomer = new User({
+      name,
+      email,
+      phone,
+      pin: hash,
+      role,
+      nidNo,
+    });
+    await newCustomer.save();
+    res.status(201).json({
+      success: true,
+      message: 'User create successfully',
+      data: newCustomer,
     });
   } catch (error) {
     next(error);
