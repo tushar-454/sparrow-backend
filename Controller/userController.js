@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../Model/User');
+const Account = require('../Model/Account');
 /**
  * user create controller
  */
@@ -65,4 +66,24 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-module.exports = { createUser, loginUser };
+/**
+ * Get account controller by phone
+ */
+
+const getAccount = async (req, res, next) => {
+  try {
+    const { phone } = req.params;
+    const account = await Account.findOne({ phone });
+    if (account) {
+      res
+        .status(200)
+        .json({ success: true, message: 'Account found', data: account });
+    } else {
+      res.status(404).json({ success: false, message: 'Account not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createUser, loginUser, getAccount };
