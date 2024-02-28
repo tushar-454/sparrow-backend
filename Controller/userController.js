@@ -204,6 +204,26 @@ const getUserInfo = async (req, res, next) => {
   }
 };
 
+const updateUserOneDeviceLogin = async (req, res, next) => {
+  try {
+    const { emailOrPhone } = req.params;
+    const { isOneDeviceLoggedIn } = req.body;
+    // find user by email or phone
+    const user = await User.findOne({
+      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+    });
+    user.isOneDeviceLoggedIn = isOneDeviceLoggedIn;
+    await user.save();
+    res.status(200).json({
+      status: 200,
+      message: 'User updated successfully',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -211,4 +231,5 @@ module.exports = {
   cashOut,
   sendMoney,
   getUserInfo,
+  updateUserOneDeviceLogin,
 };
