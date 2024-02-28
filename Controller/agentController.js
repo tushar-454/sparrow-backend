@@ -10,6 +10,7 @@ const agentCashIn = async (req, res, next) => {
   try {
     const { receiverPhone, amount, phone, pin } = req.body;
     const receiver = await Account.findOne({ phone: receiverPhone });
+    const receiverInfo = await User.findOne({ phone: receiverPhone });
     const agent = await Account.findOne({ phone });
     const agentInfo = await User.findOne({ phone });
     const amountToNumber = Number(amount);
@@ -40,8 +41,7 @@ const agentCashIn = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       message: 'Cash in successfully',
-      data: receiver,
-      data1: agent,
+      receiverName: receiverInfo.name,
     });
   } catch (error) {
     next(error);

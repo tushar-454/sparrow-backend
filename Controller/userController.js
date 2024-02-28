@@ -136,6 +136,7 @@ const cashOut = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Cash out successfully',
+      agentName: agentInfo.name,
     });
   } catch (error) {
     next(error);
@@ -196,6 +197,7 @@ const sendMoney = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Send money successfully',
+      receiverName: receiverInfo.name,
     });
   } catch (error) {
     next(error);
