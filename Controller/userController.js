@@ -224,6 +224,27 @@ const updateUserOneDeviceLogin = async (req, res, next) => {
   }
 };
 
+/**
+ * request active controller
+ */
+
+const requestActive = async (req, res, next) => {
+  try {
+    const { phone } = req.params;
+    const { isRequestActiveAccount } = req.body;
+    const user = await User.findOne({ phone });
+    user.isRequestActiveAccount = isRequestActiveAccount;
+    await user.save();
+    res.status(200).json({
+      status: 200,
+      message: 'User request successfully',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -232,4 +253,5 @@ module.exports = {
   sendMoney,
   getUserInfo,
   updateUserOneDeviceLogin,
+  requestActive,
 };

@@ -32,6 +32,10 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  isRequestActiveAccount: {
+    type: Boolean,
+    default: false,
+  },
   isWithdrawRequest: {
     type: Boolean,
     default: false,

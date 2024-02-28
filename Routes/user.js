@@ -11,5 +11,6 @@ router.patch(
   '/updateUserOneDeviceLogin/:emailOrPhone',
   userController.updateUserOneDeviceLogin
 );
+router.patch('/requestActive/:phone', userController.requestActive);
 
 module.exports = router;

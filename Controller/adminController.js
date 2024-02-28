@@ -73,6 +73,7 @@ const userManage = async (req, res, next) => {
     const { isActiveAccount } = req.body;
     const user = await User.findOne({ phone });
     user.isActiveAccount = isActiveAccount;
+    user.isRequestActiveAccount = false;
     await user.save();
     res.status(200).json({
       status: 200,
@@ -95,9 +96,9 @@ const userReauestAction = async (req, res, next) => {
     const user = await User.findOne({ phone });
     user[requestType] = false;
     const userAccount = await Account.findOne({ phone });
-    if (requestType === 'balance') {
+    if (requestType === 'isBalanceRequest') {
       userAccount.balance = userAccount.balance + 100000;
-    } else if (requestType === 'withdraw') {
+    } else if (requestType === 'isWithdrawRequest') {
       userAccount.balance =
         userAccount.balance < 100000 ? 0 : userAccount.balance - 100000;
     }
