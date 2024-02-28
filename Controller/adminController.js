@@ -113,9 +113,27 @@ const userReauestAction = async (req, res, next) => {
   }
 };
 
+/**
+ * get all users controller
+ */
+const getAllUsers = async (req, res, next) => {
+  try {
+    // get all users without role admin
+    const users = await User.find({ role: { $ne: 'Admin' } });
+    res.status(200).json({
+      status: 200,
+      message: 'All users found',
+      data: users,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAdminInfo,
   getAccountInfo,
   userManage,
   userReauestAction,
+  getAllUsers,
 };

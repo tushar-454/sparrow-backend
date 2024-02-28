@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const adminController = require('../Controller/adminController');
 
+router.get('/allUsers', adminController.getAllUsers);
 router.get('/info/:phone', adminController.getAdminInfo);
 router.get('/account/:phone', adminController.getAccountInfo);
 router.patch('/userManage/:phone', adminController.userManage);
