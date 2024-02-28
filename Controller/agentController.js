@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const Account = require('../Model/Account');
 const User = require('../Model/User');
 
@@ -7,10 +8,19 @@ const User = require('../Model/User');
 
 const agentCashIn = async (req, res, next) => {
   try {
-    const { receiverPhone, amount, phone } = req.body;
+    const { receiverPhone, amount, phone, pin } = req.body;
     const receiver = await Account.findOne({ phone: receiverPhone });
     const agent = await Account.findOne({ phone });
+    const agentInfo = await User.findOne({ phone });
     const amountToNumber = Number(amount);
+    // aget password check
+    const match = await bcrypt.compare(pin, agentInfo.pin);
+    if (!match) {
+      return res.status(400).json({
+        status: 400,
+        message: 'Invalid pin',
+      });
+    }
     if (!receiver || !agent) {
       return res.status(404).json({
         status: 404,

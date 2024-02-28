@@ -94,11 +94,23 @@ const getAccount = async (req, res, next) => {
 
 const cashOut = async (req, res, next) => {
   try {
-    const { agentPhone, phone, amount } = req.body;
+    const { agentPhone, phone, amount, pin } = req.body;
     const agent = await Account.findOne({ phone: agentPhone });
+    const agentInfo = await User.findOne({ phone: agentPhone });
     const customer = await Account.findOne({ phone });
+    const customerInfo = await User.findOne({ phone });
     const admin = await Account.findOne({ role: 'Admin' });
     const amountToNumber = Number(amount);
+    // password check
+    const match = await bcrypt.compare(pin, customerInfo?.pin);
+    if (!match) {
+      return res.status(400).json({ success: false, message: 'Invalid pin' });
+    }
+    console.log(agentInfo, 'agentInfo?.role');
+    // agent check
+    if (agentInfo?.role !== 'Agent') {
+      return res.status(400).json({ success: false, message: 'Invalid agent' });
+    }
     if (customer.balance < amountToNumber + amountToNumber * 0.015) {
       return res
         .status(400)
@@ -136,11 +148,23 @@ const cashOut = async (req, res, next) => {
 
 const sendMoney = async (req, res, next) => {
   try {
-    const { receiverPhone, phone, amount } = req.body;
+    const { receiverPhone, phone, amount, pin } = req.body;
     const receiver = await Account.findOne({ phone: receiverPhone });
+    const receiverInfo = await User.findOne({ phone: receiverPhone });
     const customer = await Account.findOne({ phone });
+    const customerInfo = await User.findOne({ phone });
     const admin = await Account.findOne({ role: 'Admin' });
     const amountToNumber = Number(amount);
+    if (receiverInfo?.role !== 'Customer') {
+      return res.status(400).json({
+        success: false,
+        message: "You can't send money without customer account.",
+      });
+    }
+    const match = await bcrypt.compare(pin, customerInfo.pin);
+    if (!match) {
+      return res.status(400).json({ success: false, message: 'Invalid pin' });
+    }
     if (
       (amountToNumber > 100 && customer.balance < amountToNumber + 5) ||
       (amountToNumber < 100 && customer.balance < amountToNumber)
