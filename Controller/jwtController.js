@@ -1,3 +1,4 @@
+const User = require('../Model/User');
 const jwt = require('jsonwebtoken');
 
 /**
@@ -6,9 +7,12 @@ const jwt = require('jsonwebtoken');
 const createToken = async (req, res, next) => {
   const { emailOrPhone } = req.body;
   try {
-    const payload = { emailOrPhone };
+    const user = await User.findOne({
+      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+    });
+    const payload = { emailOrPhone, role: user.role };
     const token = await jwt.sign(payload, process.env.TOKEN_SECRET, {
-      expiresIn: '1h',
+      expiresIn: 30,
     });
     res.cookie('token', token, {
       httpOnly: true,
